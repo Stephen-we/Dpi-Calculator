@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DPI Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        input, button {
+            margin: 10px;
+            padding: 8px;
+            font-size: 16px;
+        }
+        #result, #dpiSuggestion {
+            font-size: 18px;
+            font-weight: bold;
+            color: #007BFF;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>📏 DPI Calculator & Print Size Guide</h2>
+    <p>Upload an image or enter resolution manually to calculate the best print size & recommended DPI.</p>
+
+    <input type="file" id="upload" accept="image/*"><br>
+
+    <label for="width">Image Width (px):</label>
+    <input type="number" id="width" placeholder="Enter width">
+    <br>
+    <label for="height">Image Height (px):</label>
+    <input type="number" id="height" placeholder="Enter height">
+    <br>
+    <label for="dpi">DPI (dots per inch):</label>
+    <input type="number" id="dpi" value="300">
+    <br>
+    <button id="calculateButton">Calculate Max Print Size</button>
+
+    <p id="result"></p>
+
+    <h3>🔍 Want a Specific Print Size?</h3>
+    <label for="printWidth">Desired Print Width (inches):</label>
+    <input type="number" id="printWidth" placeholder="Enter width">
+    <br>
+    <label for="printHeight">Desired Print Height (inches):</label>
+    <input type="number" id="printHeight" placeholder="Enter height">
+    <br>
+    <button id="suggestDpiButton">Find Best DPI</button>
+
+    <p id="dpiSuggestion"></p>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Calculate Max Print Size
+            document.getElementById("calculateButton").addEventListener("click", function() {
+                let width = document.getElementById("width").value;
+                let height = document.getElementById("height").value;
+                let dpi = document.getElementById("dpi").value;
+
+                if (width && height && dpi) {
+                    let printWidth = (width / dpi).toFixed(2);
+                    let printHeight = (height / dpi).toFixed(2);
+                    document.getElementById("result").innerText = `🖨️ Max Print Size: ${printWidth} x ${printHeight} inches`;
+                } else {
+                    document.getElementById("result").innerText = "⚠️ Please enter valid numbers.";
+                }
+            });
+
+            // Find Best DPI for Desired Print Size
+            document.getElementById("suggestDpiButton").addEventListener("click", function() {
+                let width = document.getElementById("width").value;
+                let height = document.getElementById("height").value;
+                let printWidth = document.getElementById("printWidth").value;
+                let printHeight = document.getElementById("printHeight").value;
+
+                if (width && height && printWidth && printHeight) {
+                    let suggestedDpiX = (width / printWidth).toFixed(0);
+                    let suggestedDpiY = (height / printHeight).toFixed(0);
+                    let suggestedDpi = Math.min(suggestedDpiX, suggestedDpiY);
+
+                    let quality = suggestedDpi >= 300 ? "✅ Excellent (Professional Print)" :
+                                  suggestedDpi >= 150 ? "⚠️ Good (Standard Print)" :
+                                  "❌ Low (Blurry Print)";
+
+                    document.getElementById("dpiSuggestion").innerText = `🔢 Recommended DPI: ${suggestedDpi} DPI - ${quality}`;
+                } else {
+                    document.getElementById("dpiSuggestion").innerText = "⚠️ Please enter all values.";
+                }
+            });
+
+            // Auto-fill width & height when an image is uploaded
+            document.getElementById("upload").addEventListener("change", function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const img = new Image();
+                    img.onload = function() {
+                        document.getElementById("width").value = img.naturalWidth;
+                        document.getElementById("height").value = img.naturalHeight;
+                    };
+                    img.src = URL.createObjectURL(file);
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
